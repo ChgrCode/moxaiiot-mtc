@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 '''
 UC-8200 User LED utillity.
 
@@ -35,7 +35,9 @@ import argparse
 import subprocess
 
 
-USER_OUTPUT="USER LED IS NOW "
+USER_OUTPUT = "USER LED IS NOW "
+
+### Do not edit below
 LED_STATE=-1
 
 '''
@@ -64,6 +66,7 @@ def toggle_led_state(duration):
     
     return True
 
+
 '''
 '''
 def set_led_state(state):
@@ -89,6 +92,7 @@ def led_state_txt(state):
     else:
         return "Unknown"
 
+
 '''
 '''
 def main_argparse(assigned_args = None):  
@@ -104,11 +108,12 @@ def main_argparse(assigned_args = None):
     parser = argparse.ArgumentParser(prog="uc-led-app", description=globals()['__doc__'], epilog="!!Note: .....")
     parser.add_argument("-0", "--off", dest="led_state", action="store_const",  const=0, default=-1, help="Turn off LED")
     parser.add_argument("-1", "--on", dest="led_state", action="store_const",  const=1, default=-1, help="Turn on LED")
-    parser.add_argument("-t", "--toggle", dest="led_toggle", metavar="Toggle", type=int, action="store", default=-1, help="Toggle user LED for ms.")
+    parser.add_argument("-t", "--toggle", dest="led_toggle", metavar="Toggle", type=int, action="store", default=-1, help="Toggle user LED for x miliseconds.")
     parser.add_argument("-v", "--verbose", dest="verbose_level", action="count", default=None, help="Turn on console DEBUG mode. Max = -vvv")
     parser.add_argument("-V", "--version", action="version", version=__version__) 
 
     return parser.parse_args(assigned_args)
+
 
 '''
 '''

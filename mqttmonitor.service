@@ -1,0 +1,12 @@
+[Unit]
+Description=MQTT Broker Monitoring Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/uc_broker_status.py -t "#"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

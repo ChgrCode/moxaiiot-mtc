@@ -10,6 +10,7 @@ Examples:
 uc_broker_status.py -t "#"  monitors all topics
 uc_broker_status.py -t "/MTC/#" monitors topics below /MTC
 
+
 '''
 
 '''
@@ -40,6 +41,7 @@ from uc_user_led import toggle_led_state, set_led_state
 
 MQTT_TOPIC = "$SYS/#"
 VERBOSE = 0
+TOGGLE_DURATION=0.05
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -57,7 +59,7 @@ def on_disconnect(client, userdata, rc):
 def on_message(client, userdata, msg):
     if VERBOSE:
         print(msg.topic+" "+str(msg.payload))
-    toggle_led_state(0.05)
+    toggle_led_state(TOGGLE_DURATION)
 
 
 '''
@@ -74,6 +76,7 @@ def main_argparse(assigned_args = None):
     import argparse, logging
     parser = argparse.ArgumentParser(prog="uc-led-app", description=globals()['__doc__'], epilog="!!Note: .....")
     parser.add_argument("-t", "--topic", dest="topic", metavar="Topic", type=str, action="store", default='#', help="Topic to monitor")
+    parser.add_argument("-d", dest="duration", metavar="Toggle duration", type=int, action="store", default=None, help="Set the LED toggle duration in miliseconds")
     parser.add_argument("-v", "--verbose", dest="verbose_level", action="count", default=None, help="Turn on console DEBUG mode. Max = -vvv")
     parser.add_argument("-V", "--version", action="version", version=__version__) 
 
@@ -83,11 +86,14 @@ def main_argparse(assigned_args = None):
 '''
 def main(assigned_args = None):  
     # type: (List)    
-    global MQTT_TOPIC, VERBOSE   
+    global MQTT_TOPIC, VERBOSE, TOGGLE_DURATION   
     
     cargs = main_argparse(assigned_args)   
-    MQTT_TOPIC = cargs.topic
     VERBOSE = cargs.verbose_level
+    
+    MQTT_TOPIC = cargs.topic    
+    if cargs.duration is not None:
+        TOGGLE_DURATION = cargs.duration/1000
     
     set_led_state(0)
     toggle_led_state(1)
@@ -117,10 +123,13 @@ def main(assigned_args = None):
     except KeyboardInterrupt as e: 
         print("User disconnect")  
         client.disconnect()   
+        set_led_state(0)
     except Exception as e:
         print(e)
         client.disconnect()
-                         
+        set_led_state(0)
+        
+    set_led_state(0)                   
     return 0
     
 if __name__ == "__main__":     
